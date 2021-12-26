@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CoreComponent } from './core.component';
+import { NgxTreeComponent } from './ngx-tree.component';
 
-describe('CoreComponent', () => {
-  let component: CoreComponent;
-  let fixture: ComponentFixture<CoreComponent>;
+describe('NgxTreeComponent', () => {
+  let component: NgxTreeComponent;
+  let fixture: ComponentFixture<NgxTreeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CoreComponent ]
+      declarations: [ NgxTreeComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CoreComponent);
+    fixture = TestBed.createComponent(NgxTreeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

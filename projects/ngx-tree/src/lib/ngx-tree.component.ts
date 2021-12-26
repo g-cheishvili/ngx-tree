@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'lib-core',
+  selector: 'lib-ngx-tree',
   template: `
     <p>
-      core works!
+      ngx-tree works!
     </p>
   `,
   styles: [
   ]
 })
-export class CoreComponent implements OnInit {
+export class NgxTreeComponent implements OnInit {
 
   constructor() { }
 

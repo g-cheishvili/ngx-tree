@@ -7,6 +7,10 @@
       "core": [
         "dist/core/core",
         "dist/core"
+      ],
+      "ngx-tree": [
+        "dist/ngx-tree/ngx-tree",
+        "dist/ngx-tree"
       ]
     },
     "outDir": "./dist/out-tsc",
