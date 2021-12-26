@@ -1,0 +1,15 @@
+<ng-container *ngTemplateOutlet="treeTemplate; context: createTreeContext(data, 0, '')"></ng-container>
+
+<ng-template let-items="items" let-level="level" let-parentPath="parentPath" let-parent="parent" #treeTemplate>
+  <ng-container *ngFor="let item of items || []; trackBy: trackByKey; let offset = index;">
+    <ng-container
+      *ngTemplateOutlet="node.templateRef; context: createNodeContext(item, parentPath, offset, parent, childrenTemplate)"
+    ></ng-container>
+    <ng-template #childrenTemplate>
+      <ng-container *ngIf="isExpandableBinder(item)">
+        <ng-container
+          *ngTemplateOutlet="treeTemplate; context: createTreeContext(childrenBinder(item), level, parentPath, offset, parent)"></ng-container>
+      </ng-container>
+    </ng-template>
+  </ng-container>
+</ng-template>
