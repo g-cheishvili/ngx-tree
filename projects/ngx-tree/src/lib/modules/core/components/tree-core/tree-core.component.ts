@@ -173,7 +173,8 @@ export class TreeCoreComponent<T = any> {
     return {
       items,
       level: level + 1,
-      parentPath: typeof offset === 'number' ? this.generatePath(parentPath, offset) : '',
+      parentPath:
+        typeof offset === 'number' ? this.generatePath(parentPath, offset) : '',
       parent
     };
   }
