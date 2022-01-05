@@ -1,6 +1,28 @@
 <ng-container *ngTemplateOutlet="treeTemplate; context: createTreeContext(data, 0, '')"></ng-container>
 
-<ng-template let-items="items" let-level="level" let-parentPath="parentPath" let-parent="parent" #treeTemplate>
+<ng-template let-data="items" let-level="level" let-parentPath="parentPath" let-parent="parent" #treeTemplate>
+  <ng-container *ngIf="isArray(data); else networkEntity">
+    <ng-template [ngTemplateOutlet]="actualTreeTemplate"
+                 [ngTemplateOutletContext]="{items: data, level: level, parentPath: parentPath, parent: parent}">
+    </ng-template>
+  </ng-container>
+  <ng-template #networkEntity>
+    <ng-container *ngIf="$any(data).state === 'Loading'">
+      <ng-template [ngTemplateOutlet]="loadingDirective?.templateRef || defaultLoadingTemplate"></ng-template>
+    </ng-container>
+    <ng-container *ngIf="$any(data).state === 'Success'">
+      <ng-template [ngTemplateOutlet]="actualTreeTemplate"
+                   [ngTemplateOutletContext]="{items: $any(data).data, level: level, parentPath: parentPath, parent: parent}">
+      </ng-template>
+    </ng-container>
+    <ng-container *ngIf="$any(data).state === 'Failure'">
+      <ng-template [ngTemplateOutlet]="errorDirective?.templateRef || defaultErrorTemplate"
+                   [ngTemplateOutletContext]="{$implicit: $any(data).data}"></ng-template>
+    </ng-container>
+  </ng-template>
+</ng-template>
+
+<ng-template let-items="items" let-level="level" let-parentPath="parentPath" let-parent="parent" #actualTreeTemplate>
   <ng-container *ngFor="let item of items || []; trackBy: trackByKey; let offset = index;">
     <ng-container
       *ngTemplateOutlet="node.templateRef; context: createNodeContext(item, parentPath, offset, parent, childrenTemplate)"
@@ -8,8 +30,37 @@
     <ng-template #childrenTemplate>
       <ng-container *ngIf="isExpandableBinder(item)">
         <ng-container
-          *ngTemplateOutlet="treeTemplate; context: createTreeContext(childrenBinder(item), level, parentPath, offset, parent)"></ng-container>
+          *ngTemplateOutlet="childNode; context: {item: item, level: level, parentPath: parentPath, offset: offset, parent: parent}"></ng-container>
       </ng-container>
     </ng-template>
   </ng-container>
+</ng-template>
+
+<ng-template #childNode
+             let-item="item"
+             let-level="level"
+             let-parentPath="parentPath"
+             let-offset="offset"
+             let-parent="parent">
+  <ng-container *ngIf="childrenBinder(item) as children">
+    <ng-container *ngIf="isObservable(children); else primitive">
+      <ng-container *ngIf="obs(children) | async as items">
+        <ng-container
+          *ngTemplateOutlet="treeTemplate; context: createTreeContext(items, level, parentPath, offset, parent)"></ng-container>
+      </ng-container>
+    </ng-container>
+    <ng-template #primitive>
+      <ng-container
+        *ngTemplateOutlet="treeTemplate; context: createTreeContext(arr(children), level, parentPath, offset, parent)"></ng-container>
+    </ng-template>
+  </ng-container>
+</ng-template>
+
+<ng-template #defaultLoadingTemplate>
+  <div>Loading...</div>
+</ng-template>
+<ng-template #defaultErrorTemplate let-error>
+  <div>
+    {{ error.message }}
+  </div>
 </ng-template>

@@ -1,0 +1,19 @@
+<button
+  (click)="item.toggle()"
+  *ngIf="item.expandable"
+  style="background: transparent; border: none"
+>
+  <i class="ngt-icon"
+     [class.chevron-down]="item.isExpanded()"
+     [class.chevron-right]="!item.isExpanded()">
+  </i>
+</button>
+<input type="checkbox" *ngIf="hasSelect">
+<ng-template [ngTemplateOutlet]="defaultLabelTemplate"></ng-template>
+<ng-container *ngIf="item.isExpanded()">
+  <ng-template [ngTemplateOutlet]="item.childrenTemplate"></ng-template>
+</ng-container>
+
+<ng-template #defaultLabelTemplate>
+  {{ resolveLabel() }}
+</ng-template>

@@ -22,11 +22,15 @@ export function resolvePropertyFn(): (
 ) => any {
   const cache = new WeakMap();
   return (object: Object, propertyPath: string) => {
-    if (cache.has(object)) {
-      return cache.get(object);
+    if (!cache.has(object)) {
+      cache.set(object, new Map<string, any>());
+    }
+    const objCache = cache.get(object);
+    if (objCache.has(propertyPath)) {
+      return objCache.get(propertyPath);
     }
     const property = _resolveProperty(object, propertyPath);
-    cache.set(object, property);
+    objCache.set(propertyPath, property);
     return property;
   };
 }

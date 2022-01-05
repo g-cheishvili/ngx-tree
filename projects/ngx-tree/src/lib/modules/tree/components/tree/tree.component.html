@@ -1,0 +1,22 @@
+<div ngtTreeCore
+     [data]="data"
+     [state]="state"
+     [isExpanded]="isExpanded"
+     [expandFn]="expandFn"
+     [collapseFn]="collapseFn"
+     [bindKey]="keyBinder"
+     [bindChildren]="childrenBinder"
+     [isExpandable]="isExpandableBinder"
+     (stateChange)="stateChange.emit($event)"
+     (expand)="expand.emit($event)"
+     (collapse)="collapse.emit($event)"
+     (toggle)="toggle.emit($event)"
+     class="ngt-tree"
+>
+  <div *ngtNode="let node"
+       [ngtTreeNode]="node"
+       class="ngt-node"
+       [style.padding-left]="'10px'">
+  </div>
+  <span *ngtLoading class="loadingIndicator"></span>
+</div>

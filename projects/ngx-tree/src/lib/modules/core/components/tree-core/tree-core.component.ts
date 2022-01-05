@@ -14,9 +14,14 @@ import {
   CoreTreeNode,
   CoreTreeNodeAction,
   CoreTreeNodeContext,
-  CoreTreeState
+  CoreTreeState,
+  NetworkEntity
 } from '../../core-tree.types';
 import { resolvePropertyFn } from '../../utils/resolveProperty';
+import { AbstractTreeToken } from '../../tokens/AbstractTreeToken';
+import { isObservable, Observable } from 'rxjs';
+import { LoadingDirective } from '../../directives/loading.directive';
+import { ErrorDirective } from '../../directives/error.directive';
 
 @Component({
   selector: 'ngt-tree-core, [ngtTreeCore]',
@@ -24,7 +29,7 @@ import { resolvePropertyFn } from '../../utils/resolveProperty';
   styleUrls: ['./tree-core.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TreeCoreComponent<T = any> {
+export class TreeCoreComponent<T = any> extends AbstractTreeToken<T> {
   @Input() data: T[] = [];
   @Input() state: CoreTreeState = {};
   @Input() isExpanded: (item: T, path: any) => boolean;
@@ -35,15 +40,23 @@ export class TreeCoreComponent<T = any> {
   @Output() collapse = new EventEmitter<CoreTreeNodeAction>();
   @Output() toggle = new EventEmitter<CoreTreeNodeAction>();
   @ContentChild(NodeDirective, { static: false }) node: NodeDirective;
+  @ContentChild(LoadingDirective, { static: false })
+  loadingDirective: LoadingDirective;
+  @ContentChild(ErrorDirective, { static: false })
+  errorDirective: ErrorDirective<Error>;
 
   keyBinder: (item: T) => any = (item: any) => item.id;
-  childrenBinder: (item: T) => T[] = (item: any) => item.children;
+  childrenBinder: (item: T) => T[] | Observable<T[] | NetworkEntity<T[]>> = (
+    item: any
+  ) => item.children;
   isExpandableBinder: (item: T) => boolean = (item) =>
     Array.isArray(this.childrenBinder(item));
 
-  private resolveProperty = resolvePropertyFn();
+  isObservable = isObservable;
+  readonly resolveProperty = resolvePropertyFn();
 
   constructor(private changeDetectorRef: ChangeDetectorRef) {
+    super();
     this.trackByKey = this.trackByKey.bind(this);
   }
 
@@ -99,7 +112,7 @@ export class TreeCoreComponent<T = any> {
     const isExpanded =
       typeof this.isExpanded === 'function'
         ? () => this.isExpanded(item, path)
-        : () => this.state[path];
+        : () => (this.state as any)[path];
     const toggle = () => (isExpanded() ? collapse() : expand());
     const node: CoreTreeNode<T> = {
       item,
@@ -107,7 +120,7 @@ export class TreeCoreComponent<T = any> {
       level: parentPath.length + 1,
       path,
       parent,
-      children: this.childrenBinder(item),
+      // children: this.childrenBinder(item),
       childrenTemplate,
       isExpanded,
       expanded: isExpanded, // @deprecated
@@ -164,7 +177,7 @@ export class TreeCoreComponent<T = any> {
   }
 
   createTreeContext(
-    items: T[],
+    items: T[] | NetworkEntity<T[]>,
     level: number,
     parentPath: string,
     offset?: number,
@@ -178,4 +191,10 @@ export class TreeCoreComponent<T = any> {
       parent
     };
   }
+
+  obs = (o: any) => o as Observable<T[] | NetworkEntity<T[]>>;
+
+  isArray = (data: any) => Array.isArray(data);
+
+  arr = (data: any) => data as T[];
 }

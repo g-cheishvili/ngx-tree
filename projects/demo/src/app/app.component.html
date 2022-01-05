@@ -1,39 +1,6 @@
-<table>
-  <thead>
-  <tr>
-    <th>
-    </th>
-    <th>
-      Path
-    </th>
-    <th>
-      Name
-    </th>
-  </tr>
-  </thead>
-  <tbody ngtTreeCore [data]="items">
-  <ng-template ngtNode let-node>
-    <tr>
-      <td [style.padding-left]="node.level * 10 + 'px'">
-        <button (click)="node.toggle()">
-          <ng-container *ngIf="!node.isExpanded()">
-            &#8674;
-          </ng-container>
-          <ng-container *ngIf="node.isExpanded()">
-            &#8673;
-          </ng-container>
-        </button>
-      </td>
-      <td>
-        {{ node.path }}
-      </td>
-      <td>
-        {{ node.item.name }}
-      </td>
-    </tr>
-    <ng-container *ngIf="node.isExpanded()">
-      <ng-template [ngTemplateOutlet]="node.childrenTemplate"></ng-template>
-    </ng-container>
-  </ng-template>
-  </tbody>
-</table>
+<ngt-tree
+  [data]="items"
+  [bindChildren]="bindChildren"
+  [isExpandable]="isExpandable"
+  selection="multiple">
+</ngt-tree>
